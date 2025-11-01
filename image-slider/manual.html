@@ -1,0 +1,1106 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Legendary Image Gallery</title>
+    
+    <!-- Bootstrap 5 CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+    
+    <!-- Font Awesome for Icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+    
+    <!-- Google Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@400;600;700;900&family=Cormorant+Garamond:wght@300;400;600;700&display=swap" rel="stylesheet">
+    
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Cormorant Garamond', serif;
+            background: #0a0a0a;
+            min-height: 100vh;
+            overflow-x: hidden;
+            color: #fff;
+        }
+
+        /* Epic Background */
+        .epic-background {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: -1;
+            background: 
+                radial-gradient(circle at 20% 50%, rgba(212, 175, 55, 0.1) 0%, transparent 50%),
+                radial-gradient(circle at 80% 80%, rgba(184, 134, 11, 0.1) 0%, transparent 50%),
+                linear-gradient(135deg, #0a0a0a 0%, #1a1410 50%, #0a0a0a 100%);
+        }
+
+        .epic-background::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: url('data:image/svg+xml,<svg width="100" height="100" xmlns="http://www.w3.org/2000/svg"><defs><pattern id="grid" width="100" height="100" patternUnits="userSpaceOnUse"><path d="M 100 0 L 0 0 0 100" fill="none" stroke="rgba(212, 175, 55, 0.05)" stroke-width="1"/></pattern></defs><rect width="100" height="100" fill="url(%23grid)"/></svg>');
+            opacity: 0.3;
+            animation: gridMove 20s linear infinite;
+        }
+
+        @keyframes gridMove {
+            0% { transform: translate(0, 0); }
+            100% { transform: translate(100px, 100px); }
+        }
+
+        /* Floating Particles */
+        .particles {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: 0;
+            pointer-events: none;
+        }
+
+        .particle {
+            position: absolute;
+            width: 2px;
+            height: 2px;
+            background: rgba(212, 175, 55, 0.8);
+            border-radius: 50%;
+            box-shadow: 0 0 10px rgba(212, 175, 55, 0.5);
+            animation: float-particle linear infinite;
+        }
+
+        @keyframes float-particle {
+            0% {
+                transform: translateY(100vh) translateX(0);
+                opacity: 0;
+            }
+            10% {
+                opacity: 1;
+            }
+            90% {
+                opacity: 1;
+            }
+            100% {
+                transform: translateY(-100px) translateX(100px);
+                opacity: 0;
+            }
+        }
+
+        /* Header */
+        .legendary-header {
+            padding: 3rem 0;
+            text-align: center;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .legendary-header::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 200%;
+            height: 2px;
+            background: linear-gradient(90deg, transparent, #d4af37, transparent);
+            animation: shimmer 3s ease-in-out infinite;
+        }
+
+        @keyframes shimmer {
+            0%, 100% { opacity: 0.3; }
+            50% { opacity: 1; }
+        }
+
+        .legendary-title {
+            font-family: 'Cinzel', serif;
+            font-size: 4rem;
+            font-weight: 900;
+            background: linear-gradient(135deg, #d4af37 0%, #f4e7c3 25%, #d4af37 50%, #aa8d39 75%, #d4af37 100%);
+            background-size: 200% auto;
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            animation: goldShine 3s linear infinite;
+            text-transform: uppercase;
+            letter-spacing: 0.3rem;
+            position: relative;
+            display: inline-block;
+            text-shadow: 0 0 30px rgba(212, 175, 55, 0.5);
+        }
+
+        @keyframes goldShine {
+            0% { background-position: 0% center; }
+            100% { background-position: 200% center; }
+        }
+
+        .legendary-title::before,
+        .legendary-title::after {
+            content: '◆';
+            position: absolute;
+            top: 50%;
+            transform: translateY(-50%);
+            color: #d4af37;
+            font-size: 1.5rem;
+            animation: pulse 2s ease-in-out infinite;
+        }
+
+        .legendary-title::before {
+            left: -3rem;
+        }
+
+        .legendary-title::after {
+            right: -3rem;
+        }
+
+        @keyframes pulse {
+            0%, 100% { opacity: 0.5; transform: translateY(-50%) scale(1); }
+            50% { opacity: 1; transform: translateY(-50%) scale(1.2); }
+        }
+
+        .legendary-subtitle {
+            font-size: 1.4rem;
+            color: #c9b037;
+            margin-top: 1rem;
+            letter-spacing: 0.2rem;
+            opacity: 0;
+            animation: fadeInUp 1s ease-out 0.5s forwards;
+        }
+
+        @keyframes fadeInUp {
+            from {
+                opacity: 0;
+                transform: translateY(20px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        /* Gallery Container */
+        .gallery-container {
+            padding: 4rem 0;
+            position: relative;
+            z-index: 1;
+        }
+
+        .gallery-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+            gap: 2rem;
+            padding: 2rem;
+            perspective: 1000px;
+        }
+
+        .gallery-card {
+            position: relative;
+            aspect-ratio: 4/5;
+            cursor: pointer;
+            transform-style: preserve-3d;
+            transition: all 0.6s cubic-bezier(0.23, 1, 0.32, 1);
+        }
+
+        .gallery-card::before {
+            content: '';
+            position: absolute;
+            inset: -2px;
+            background: linear-gradient(135deg, #d4af37, #f4e7c3, #d4af37);
+            border-radius: 15px;
+            opacity: 0;
+            transition: opacity 0.4s ease;
+            z-index: -1;
+            animation: borderRotate 4s linear infinite;
+        }
+
+        @keyframes borderRotate {
+            0% { filter: hue-rotate(0deg); }
+            100% { filter: hue-rotate(360deg); }
+        }
+
+        .gallery-card:hover::before {
+            opacity: 1;
+        }
+
+        .gallery-card:hover {
+            transform: translateY(-15px) rotateX(5deg) rotateY(5deg) scale(1.05);
+            filter: brightness(1.2);
+        }
+
+        .gallery-card-inner {
+            width: 100%;
+            height: 100%;
+            border-radius: 15px;
+            overflow: hidden;
+            box-shadow: 
+                0 20px 60px rgba(0, 0, 0, 0.7),
+                inset 0 0 0 1px rgba(212, 175, 55, 0.2);
+            position: relative;
+        }
+
+        .gallery-card img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            transition: transform 0.6s ease;
+        }
+
+        .gallery-card:hover img {
+            transform: scale(1.15);
+        }
+
+        .gallery-card-overlay {
+            position: absolute;
+            inset: 0;
+            background: linear-gradient(to top, rgba(10, 10, 10, 0.9), transparent 60%);
+            opacity: 0;
+            transition: opacity 0.4s ease;
+            display: flex;
+            align-items: flex-end;
+            padding: 1.5rem;
+        }
+
+        .gallery-card:hover .gallery-card-overlay {
+            opacity: 1;
+        }
+
+        .gallery-card-number {
+            font-family: 'Cinzel', serif;
+            font-size: 3rem;
+            font-weight: 700;
+            background: linear-gradient(135deg, #d4af37, #f4e7c3);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            text-shadow: 0 2px 10px rgba(212, 175, 55, 0.5);
+        }
+
+        /* Lightbox */
+        .legendary-lightbox {
+            display: none;
+            position: fixed;
+            inset: 0;
+            background: rgba(0, 0, 0, 0.98);
+            z-index: 10000;
+            backdrop-filter: blur(10px);
+        }
+
+        .legendary-lightbox.active {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            animation: lightboxFade 0.5s ease-out;
+        }
+
+        @keyframes lightboxFade {
+            from { opacity: 0; }
+            to { opacity: 1; }
+        }
+
+        /* Lightbox Border Frame */
+        .lightbox-frame {
+            position: relative;
+            max-width: 85vw;
+            max-height: 85vh;
+            padding: 3rem;
+        }
+
+        .lightbox-frame::before {
+            content: '';
+            position: absolute;
+            inset: 0;
+            border: 3px solid;
+            border-image: linear-gradient(135deg, #d4af37, #f4e7c3, #d4af37, #aa8d39) 1;
+            box-shadow: 
+                0 0 30px rgba(212, 175, 55, 0.3),
+                inset 0 0 30px rgba(212, 175, 55, 0.1);
+            pointer-events: none;
+            animation: framePulse 3s ease-in-out infinite;
+        }
+
+        @keyframes framePulse {
+            0%, 100% { opacity: 0.6; }
+            50% { opacity: 1; }
+        }
+
+        /* Corner Ornaments */
+        .corner-ornament {
+            position: absolute;
+            width: 40px;
+            height: 40px;
+            border: 2px solid #d4af37;
+            pointer-events: none;
+            z-index: 10;
+        }
+
+        .corner-ornament::before,
+        .corner-ornament::after {
+            content: '';
+            position: absolute;
+            background: #d4af37;
+        }
+
+        .corner-ornament::before {
+            width: 10px;
+            height: 2px;
+        }
+
+        .corner-ornament::after {
+            width: 2px;
+            height: 10px;
+        }
+
+        .corner-ornament.top-left {
+            top: 1rem;
+            left: 1rem;
+            border-right: none;
+            border-bottom: none;
+        }
+
+        .corner-ornament.top-left::before { top: 0; left: 0; }
+        .corner-ornament.top-left::after { top: 0; left: 0; }
+
+        .corner-ornament.top-right {
+            top: 1rem;
+            right: 1rem;
+            border-left: none;
+            border-bottom: none;
+        }
+
+        .corner-ornament.top-right::before { top: 0; right: 0; }
+        .corner-ornament.top-right::after { top: 0; right: 0; }
+
+        .corner-ornament.bottom-left {
+            bottom: 1rem;
+            left: 1rem;
+            border-right: none;
+            border-top: none;
+        }
+
+        .corner-ornament.bottom-left::before { bottom: 0; left: 0; }
+        .corner-ornament.bottom-left::after { bottom: 0; left: 0; }
+
+        .corner-ornament.bottom-right {
+            bottom: 1rem;
+            right: 1rem;
+            border-left: none;
+            border-top: none;
+        }
+
+        .corner-ornament.bottom-right::before { bottom: 0; right: 0; }
+        .corner-ornament.bottom-right::after { bottom: 0; right: 0; }
+
+        .lightbox-image-container {
+            position: relative;
+            max-width: 100%;
+            max-height: 70vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .lightbox-image-container img {
+            max-width: 100%;
+            max-height: 70vh;
+            object-fit: contain;
+            border-radius: 10px;
+            box-shadow: 
+                0 0 100px rgba(212, 175, 55, 0.3),
+                0 20px 60px rgba(0, 0, 0, 0.8);
+            animation: imageReveal 0.8s cubic-bezier(0.34, 1.56, 0.64, 1);
+        }
+
+        @keyframes imageReveal {
+            0% {
+                opacity: 0;
+                transform: scale(0.8) rotateY(-30deg);
+            }
+            100% {
+                opacity: 1;
+                transform: scale(1) rotateY(0deg);
+            }
+        }
+
+        /* Navigation Controls */
+        .nav-controls {
+            position: absolute;
+            top: 50%;
+            transform: translateY(-50%);
+            width: 100%;
+            display: flex;
+            justify-content: space-between;
+            padding: 0 2rem;
+            pointer-events: none;
+            z-index: 100;
+        }
+
+        .nav-btn {
+            pointer-events: all;
+            width: 70px;
+            height: 70px;
+            background: rgba(10, 10, 10, 0.8);
+            border: 2px solid #d4af37;
+            border-radius: 50%;
+            color: #d4af37;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            transition: all 0.4s cubic-bezier(0.34, 1.56, 0.64, 1);
+            position: relative;
+            overflow: hidden;
+            box-shadow: 0 0 20px rgba(212, 175, 55, 0.3);
+        }
+
+        .nav-btn::before {
+            content: '';
+            position: absolute;
+            inset: 0;
+            background: radial-gradient(circle, rgba(212, 175, 55, 0.3), transparent 70%);
+            opacity: 0;
+            transition: opacity 0.3s ease;
+        }
+
+        .nav-btn:hover::before {
+            opacity: 1;
+        }
+
+        .nav-btn:hover {
+            transform: scale(1.2);
+            background: rgba(212, 175, 55, 0.2);
+            box-shadow: 0 0 40px rgba(212, 175, 55, 0.6);
+        }
+
+        .nav-btn:active {
+            transform: scale(0.95);
+        }
+
+        .nav-btn i {
+            font-size: 1.8rem;
+            position: relative;
+            z-index: 1;
+        }
+
+        .nav-btn.prev-btn:hover {
+            transform: scale(1.2) translateX(-5px);
+        }
+
+        .nav-btn.next-btn:hover {
+            transform: scale(1.2) translateX(5px);
+        }
+
+        /* Top Controls */
+        .top-controls {
+            position: absolute;
+            top: 2rem;
+            right: 2rem;
+            z-index: 100;
+        }
+
+        .close-btn {
+            width: 60px;
+            height: 60px;
+            background: rgba(10, 10, 10, 0.8);
+            border: 2px solid #d4af37;
+            border-radius: 50%;
+            color: #d4af37;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            transition: all 0.4s ease;
+            position: relative;
+            overflow: hidden;
+            box-shadow: 0 0 20px rgba(212, 175, 55, 0.3);
+        }
+
+        .close-btn::before {
+            content: '';
+            position: absolute;
+            inset: 0;
+            background: radial-gradient(circle, rgba(212, 175, 55, 0.3), transparent 70%);
+            opacity: 0;
+            transition: opacity 0.3s ease;
+        }
+
+        .close-btn:hover::before {
+            opacity: 1;
+        }
+
+        .close-btn:hover {
+            transform: scale(1.2) rotate(90deg);
+            background: rgba(212, 175, 55, 0.2);
+            box-shadow: 0 0 40px rgba(212, 175, 55, 0.6);
+        }
+
+        .close-btn i {
+            font-size: 1.5rem;
+            position: relative;
+            z-index: 1;
+        }
+
+        /* Image Counter */
+        .image-info {
+            position: absolute;
+            top: 2rem;
+            left: 50%;
+            transform: translateX(-50%);
+            z-index: 100;
+        }
+
+        .image-counter {
+            font-family: 'Cinzel', serif;
+            font-size: 1.5rem;
+            color: #d4af37;
+            background: rgba(10, 10, 10, 0.8);
+            padding: 0.8rem 2rem;
+            border-radius: 30px;
+            border: 2px solid #d4af37;
+            box-shadow: 0 0 30px rgba(212, 175, 55, 0.3);
+            letter-spacing: 0.2rem;
+        }
+
+        /* Image Title */
+        .image-title {
+            position: absolute;
+            bottom: 2rem;
+            left: 50%;
+            transform: translateX(-50%);
+            z-index: 100;
+            text-align: center;
+        }
+
+        .image-title-text {
+            font-family: 'Cinzel', serif;
+            font-size: 1.8rem;
+            color: #d4af37;
+            background: rgba(10, 10, 10, 0.8);
+            padding: 1rem 3rem;
+            border-radius: 10px;
+            border: 1px solid rgba(212, 175, 55, 0.3);
+            backdrop-filter: blur(10px);
+            letter-spacing: 0.1rem;
+            box-shadow: 0 0 30px rgba(212, 175, 55, 0.2);
+        }
+
+        /* Back Button */
+        .legendary-back-btn {
+            position: fixed;
+            bottom: 3rem;
+            left: 3rem;
+            z-index: 999;
+            animation: slideInFromLeft 1s ease-out;
+        }
+
+        @keyframes slideInFromLeft {
+            from {
+                transform: translateX(-100px);
+                opacity: 0;
+            }
+            to {
+                transform: translateX(0);
+                opacity: 1;
+            }
+        }
+
+        .btn-legendary {
+            font-family: 'Cinzel', serif;
+            background: rgba(10, 10, 10, 0.8);
+            border: 2px solid #d4af37;
+            color: #d4af37;
+            padding: 1rem 2rem;
+            border-radius: 30px;
+            font-size: 1.1rem;
+            letter-spacing: 0.15rem;
+            transition: all 0.4s ease;
+            text-transform: uppercase;
+            position: relative;
+            overflow: hidden;
+            box-shadow: 0 0 20px rgba(212, 175, 55, 0.2);
+        }
+
+        .btn-legendary::before {
+            content: '';
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            width: 0;
+            height: 0;
+            border-radius: 50%;
+            background: rgba(212, 175, 55, 0.2);
+            transform: translate(-50%, -50%);
+            transition: width 0.4s ease, height 0.4s ease;
+        }
+
+        .btn-legendary:hover::before {
+            width: 300px;
+            height: 300px;
+        }
+
+        .btn-legendary:hover {
+            background: rgba(212, 175, 55, 0.1);
+            transform: translateX(-10px);
+            box-shadow: 0 0 40px rgba(212, 175, 55, 0.4);
+            color: #f4e7c3;
+        }
+
+        .btn-legendary i {
+            position: relative;
+            z-index: 1;
+        }
+
+        /* Responsive */
+        @media (max-width: 768px) {
+            .legendary-title {
+                font-size: 2.5rem;
+                letter-spacing: 0.2rem;
+            }
+
+            .legendary-title::before,
+            .legendary-title::after {
+                display: none;
+            }
+
+            .legendary-subtitle {
+                font-size: 1rem;
+            }
+
+            .gallery-grid {
+                grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
+                gap: 1rem;
+                padding: 1rem;
+            }
+
+            .nav-btn {
+                width: 50px;
+                height: 50px;
+            }
+
+            .nav-btn i {
+                font-size: 1.2rem;
+            }
+
+            .nav-controls {
+                padding: 0 0.5rem;
+            }
+
+            .close-btn {
+                width: 45px;
+                height: 45px;
+            }
+
+            .top-controls {
+                top: 1rem;
+                right: 1rem;
+            }
+
+            .image-counter {
+                font-size: 1rem;
+                padding: 0.6rem 1.5rem;
+            }
+
+            .image-title-text {
+                font-size: 1.2rem;
+                padding: 0.7rem 2rem;
+            }
+
+            .legendary-back-btn {
+                bottom: 1.5rem;
+                left: 1.5rem;
+            }
+
+            .btn-legendary {
+                padding: 0.7rem 1.5rem;
+                font-size: 0.9rem;
+            }
+
+            .lightbox-frame {
+                padding: 1.5rem;
+            }
+        }
+
+        /* Keyboard hint */
+        .keyboard-hint {
+            position: fixed;
+            bottom: 3rem;
+            right: 3rem;
+            background: rgba(10, 10, 10, 0.8);
+            border: 1px solid rgba(212, 175, 55, 0.3);
+            padding: 1rem 1.5rem;
+            border-radius: 10px;
+            color: #c9b037;
+            font-size: 0.9rem;
+            opacity: 0;
+            animation: fadeInUp 1s ease-out 2s forwards;
+            z-index: 999;
+        }
+
+        .keyboard-hint kbd {
+            background: rgba(212, 175, 55, 0.2);
+            padding: 0.2rem 0.5rem;
+            border-radius: 3px;
+            border: 1px solid #d4af37;
+            font-family: monospace;
+            margin: 0 0.2rem;
+        }
+    </style>
+</head>
+<body>
+    <!-- Epic Background -->
+    <div class="epic-background"></div>
+    
+    <!-- Floating Particles -->
+    <div class="particles" id="particles"></div>
+
+    <!-- Header -->
+    <div class="legendary-header">
+        <h1 class="legendary-title">Legendary Gallery</h1>
+        <p class="legendary-subtitle">Manual Navigation Experience</p>
+    </div>
+
+    <!-- Gallery Grid -->
+    <div class="gallery-container">
+        <div class="container-fluid">
+            <div class="gallery-grid" id="galleryGrid">
+                <!-- Images will be loaded here dynamically -->
+            </div>
+        </div>
+    </div>
+
+    <!-- Back Button -->
+    <a href="../../index.html" class="legendary-back-btn">
+        <button class="btn-legendary">
+            <i class="fas fa-arrow-left me-2"></i>
+            <span>Return</span>
+        </button>
+    </a>
+
+    <!-- Keyboard Hint -->
+    <div class="keyboard-hint">
+        Use <kbd>←</kbd> <kbd>→</kbd> arrow keys to navigate • <kbd>ESC</kbd> to close
+    </div>
+
+    <!-- Lightbox -->
+    <div class="legendary-lightbox" id="lightbox">
+        <!-- Corner Ornaments -->
+        <div class="corner-ornament top-left"></div>
+        <div class="corner-ornament top-right"></div>
+        <div class="corner-ornament bottom-left"></div>
+        <div class="corner-ornament bottom-right"></div>
+
+        <!-- Image Info -->
+        <div class="image-info">
+            <div class="image-counter" id="imageCounter">1 / 80</div>
+        </div>
+
+        <!-- Close Button -->
+        <div class="top-controls">
+            <button class="close-btn" id="closeBtn">
+                <i class="fas fa-times"></i>
+            </button>
+        </div>
+
+        <!-- Lightbox Frame -->
+        <div class="lightbox-frame">
+            <div class="lightbox-image-container">
+                <img src="" alt="Gallery Image" id="lightboxImage">
+            </div>
+        </div>
+
+        <!-- Image Title -->
+        <div class="image-title">
+            <div class="image-title-text" id="imageTitle">Legendary Image</div>
+        </div>
+
+        <!-- Navigation Controls -->
+        <div class="nav-controls">
+            <button class="nav-btn prev-btn" id="prevBtn">
+                <i class="fas fa-chevron-left"></i>
+            </button>
+            <button class="nav-btn next-btn" id="nextBtn">
+                <i class="fas fa-chevron-right"></i>
+            </button>
+        </div>
+    </div>
+
+    <!-- Bootstrap 5 JS -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+
+    <script>
+        // Image URLs
+        const imageUrls = [
+            "pins/pin1.jpg",
+            "pins/pin2.jpg",
+            "pins/pin3.jpg",
+            "pins/pin4.jpg",
+            "pins/pin5.jpg",
+            "pins/pin6.jpg",
+            "pins/pin7.jpg",
+            "pins/pin8.jpg",
+            "pins/pin9.jpg",
+            "pins/pin10.jpg",
+            "https://images.unsplash.com/photo-1617634667039-8e4cb277ab46?w=800",
+            "https://images.unsplash.com/photo-1519414442781-fbd745c5b497?w=800",
+            "https://images.unsplash.com/photo-1514747975201-4715db583da9?w=800",
+            "pins/pin11.jpg",
+            "pins/pin12.jpg",
+            "pins/pin13.jpg",
+            "pins/pin14.jpg",
+            "pins/pin15.jpg",
+            "pins/pin16.jpg",
+            "pins/pin17.jpg",
+            "pins/pin18.jpg",
+            "pins/pin19.jpg",
+            "pins/pin20.jpg",
+            "https://images.unsplash.com/photo-1441974231531-c6227db76b6e?w=800",
+            "https://images.unsplash.com/photo-1542401886-65d6c61db217?w=800",
+            "https://images.unsplash.com/photo-1493134799591-2c9eed26201a?w=800",
+            "pins/pin21.jpg",
+            "pins/pin22.jpg",
+            "pins/pin23.jpg",
+            "pins/pin24.jpg",
+            "pins/pin25.jpg",
+            "pins/pin26.jpg",
+            "pins/pin27.jpg",
+            "pins/pin28.jpg",
+            "pins/pin29.jpg",
+            "pins/pin30.jpg",
+            "https://images.unsplash.com/photo-1676001159789-f89ebb0d84ac?w=800",
+            "https://images.unsplash.com/photo-1531366936337-7c912a4589a7?w=800",
+            "https://images.unsplash.com/photo-1603477849227-705c424d1d80?w=800",
+            "pins/pin31.jpg",
+            "pins/pin32.jpg",   
+            "pins/pin33.jpg",
+            "pins/pin34.jpg",
+            "pins/pin35.jpg",
+            "pins/pin36.jpg",
+            "pins/pin37.jpg",
+            "pins/pin38.jpg",
+            "pins/pin39.jpg",
+            "pins/pin40.jpg",
+            "https://images.unsplash.com/photo-1663940019982-c14294717dbd?w=800",
+            "https://images.unsplash.com/photo-1605895370326-e96b9d52e3f5?w=800",
+            "https://images.unsplash.com/photo-1542609715982-16f4e1e2cfc0?w=800",
+            "pins/pin41.jpg",
+            "pins/pin42.jpg",
+            "pins/pin43.jpg",
+            "pins/pin44.jpg",
+            "pins/pin45.jpg",
+            "pins/pin46.jpg",
+            "pins/pin47.jpg",
+            "pins/pin48.jpg",
+            "pins/pin49.jpg",
+            "pins/pin50.jpg",
+            "https://images.unsplash.com/photo-1615184697985-c9bde1b07da7?w=800",
+            "https://images.unsplash.com/photo-1618565917118-723caea78e02?w=800",
+            "https://images.unsplash.com/photo-1598674093760-4e89d6e4febc?w=800",
+            "pins/pin51.jpg",
+            "pins/pin52.jpg",
+            "pins/pin53.jpg",
+            "pins/pin54.jpg",
+            "pins/pin55.jpg",
+            "pins/pin56.jpg",
+            "pins/pin57.jpg",
+            "pins/pin58.jpg",
+            "pins/pin59.jpg",
+            "pins/pin60.jpg",
+            "https://images.unsplash.com/photo-1506744038136-46273834b3fb?w=800",
+            "https://images.unsplash.com/photo-1501363282200-f83dce300c98?w=800",
+            "https://images.unsplash.com/photo-1597097458412-7dbb35fa1fcf?w=800",
+            "pins/pin61.jpg",
+            "pins/pin62.jpg",
+            "pins/pin63.jpg",
+            "pins/pin64.jpg",
+            "pins/pin65.jpg",
+            "pins/pin66.jpg",
+            "pins/pin67.jpg",
+            "pins/pin68.jpg",
+            "pins/pin69.jpg",
+            "pins/pin70.jpg",
+            "https://images.unsplash.com/photo-1628928270737-37b9f05f9827?w=800",
+            "pins/pin71.jpg",
+            "pins/pin72.jpg",
+            "pins/pin73.jpg",
+            "pins/pin74.jpg",
+            "pins/pin75.jpg",
+            "https://images.unsplash.com/photo-1614754844959-5e29c8ac2b26?w=800",
+            "pins/pin76.jpg",
+            "pins/pin77.jpg",
+            "pins/pin78.jpg",
+            "pins/pin79.jpg",
+            "pins/pin80.jpg"
+        ];
+
+        // Create 80 images
+        const allImages = [];
+        const imageTitles = [
+            "Goes well with hotspot", "Do you feel ____?", "An Old man", "The Hillside", 
+            "Glorious", "Glorious II", "Ice cube candy", "Harmony between opposistes", "A chiuaua dog", 
+            "Ambient art", 
+            "Nature's Majesty", "Mountain Sunset", "Ocean Waves", 
+            "A Female human", "Quote", "Perfect timing!", "hungry?", "WILDLIFE",
+            "Out of this world", "WILDLIFE II", "a suit for men", "Coryxkenshin, a youtuber",
+            "meditation",  
+            "Forest Path",
+            "Desert Dunes", "City Skyline",
+            "a beautiful flower", "a rocket emoji", "WILDLIFE III", "Ice cube",
+            "a flower field", "bedroom", "an enthusiastic female student", 
+            "purple sunflower field", "an octopus", "WILDLIFE IV", 
+
+            "Waterfall", "Aurora Borealis",
+            "Tropical Beach", 
+            "an IOS wallpaper", "YHWH", "volume settings", "an airport", 
+            "a luxury skyscraper", "an ITALIAN flag", "TAKEOFF!!!", "clean AIR FORCE 1s",
+"A MAJESTIC STADIUM", "RELAXING SCENERY", 
+            "Architecture", "Flower Garden", "Winter Snow",
+            "blue sunflowers", "(❁´◡`❁)", "beautiful shell cone", "🍇", 
+            "WILDLIFE V", "a feathery wallpaper", "WILDLIFE VI", "A BLACK DRIVER",
+            "TAWOG/TWWWOG", "A CAT", 
+            "Abstract Art", "Starry Night", "Wildlife VII", 
+            "AN ELDERLY MALE", "relaxing scenery II", "(⌐■_■)", "friendship", 
+            "earff", "'back to school'", "volleyball photoshot", "safety at work",
+            "business meeting 😷", "quote II", 
+            "River Landscape",
+            "Canyon Rocks", "Lake Reflection", 
+            "pixel desktop setting", "adorable baby 😐",  "'REST, YOU'VE TRIED ENOUGH'", 
+            "HAVE A GOOD DAY.", "A HEALTHY MEAL", "A MALE HUMAN IN PINK SUIT", "A MALE HUMAN IN BLACK SUIT",
+            "STAY FIT AND HEALTHY", "STAY FIT AND HEALTHY II","A HAPPY COUPLE", 
+            "Valley Meadow", 
+            "STAY FIT AND HEALTHY III", "SPORT KICKS", "SPORTS CAR", "HAPPINESS", "💗warming",
+            "Cloudy Sky",
+            "an old photo", "the globe", "a beautiful flower II", "A BEAUTIFUL FLOWER III", "＼（〇_ｏ）／"
+        ];
+
+        while (allImages.length < 100) {
+            allImages.push(...imageUrls);
+        }
+        const finalImages = allImages.slice(0, 100);
+
+        // DOM Elements
+        const galleryGrid = document.getElementById('galleryGrid');
+        const lightbox = document.getElementById('lightbox');
+        const lightboxImage = document.getElementById('lightboxImage');
+        const imageCounter = document.getElementById('imageCounter');
+        const imageTitle = document.getElementById('imageTitle');
+        const closeBtn = document.getElementById('closeBtn');
+        const prevBtn = document.getElementById('prevBtn');
+        const nextBtn = document.getElementById('nextBtn');
+
+        let currentIndex = 0;
+
+        // Create particles
+        const particlesContainer = document.getElementById('particles');
+        for (let i = 0; i < 30; i++) {
+            const particle = document.createElement('div');
+            particle.className = 'particle';
+            particle.style.left = Math.random() * 100 + '%';
+            particle.style.animationDuration = (Math.random() * 10 + 10) + 's';
+            particle.style.animationDelay = Math.random() * 5 + 's';
+            particlesContainer.appendChild(particle);
+        }
+
+        // Populate Gallery
+        finalImages.forEach((imageUrl, index) => {
+            const card = document.createElement('div');
+            card.className = 'gallery-card';
+            card.style.animationDelay = `${index * 0.03}s`;
+            
+            card.innerHTML = `
+                <div class="gallery-card-inner">
+                    <img src="${imageUrl}" alt="${imageTitles[index % imageTitles.length]}" loading="lazy">
+                    <div class="gallery-card-overlay">
+                        <div class="gallery-card-number">${String(index + 1).padStart(2, '0')}</div>
+                    </div>
+                </div>
+            `;
+            
+            card.addEventListener('click', () => openLightbox(index));
+            galleryGrid.appendChild(card);
+        });
+
+        // Open Lightbox
+        function openLightbox(index) {
+            currentIndex = index;
+            updateLightbox();
+            lightbox.classList.add('active');
+            document.body.style.overflow = 'hidden';
+        }
+
+        // Close Lightbox
+        function closeLightbox() {
+            lightbox.classList.remove('active');
+            document.body.style.overflow = 'auto';
+        }
+
+        // Update Lightbox
+        function updateLightbox() {
+            lightboxImage.src = finalImages[currentIndex];
+            imageCounter.textContent = `${currentIndex + 1} / ${finalImages.length}`;
+            imageTitle.textContent = imageTitles[currentIndex % imageTitles.length];
+        }
+
+        // Navigate Previous
+        function navigatePrev() {
+            currentIndex = (currentIndex - 1 + finalImages.length) % finalImages.length;
+            updateLightbox();
+        }
+
+        // Navigate Next
+        function navigateNext() {
+            currentIndex = (currentIndex + 1) % finalImages.length;
+            updateLightbox();
+        }
+
+        // Event Listeners
+        closeBtn.addEventListener('click', closeLightbox);
+        prevBtn.addEventListener('click', navigatePrev);
+        nextBtn.addEventListener('click', navigateNext);
+
+        // Keyboard Navigation
+        document.addEventListener('keydown', (e) => {
+            if (lightbox.classList.contains('active')) {
+                if (e.key === 'Escape') {
+                    closeLightbox();
+                } else if (e.key === 'ArrowLeft') {
+                    navigatePrev();
+                } else if (e.key === 'ArrowRight') {
+                    navigateNext();
+                }
+            }
+        });
+
+        // Close on background click
+        lightbox.addEventListener('click', (e) => {
+            if (e.target === lightbox) {
+                closeLightbox();
+            }
+        });
+
+        // Prevent context menu
+        document.addEventListener('contextmenu', (e) => {
+            if (e.target.tagName === 'IMG') {
+                e.preventDefault();
+            }
+        });
+
+        // Add gallery card stagger animation
+        const cards = document.querySelectorAll('.gallery-card');
+        cards.forEach((card, index) => {
+            card.style.animation = `scaleIn 0.6s ease-out ${index * 0.03}s backwards`;
+        });
+    </script>
+</body>
+</html>

@@ -1,0 +1,715 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Automatic Image Slider</title>
+    
+    <!-- Bootstrap 5 CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+    
+    <!-- Font Awesome for Icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+    
+    <!-- Google Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600;700&display=swap" rel="stylesheet">
+    
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Poppins', sans-serif;
+            background: linear-gradient(135deg, #0f0c29 0%, #302b63 50%, #24243e 100%);
+            min-height: 100vh;
+            overflow-x: hidden;
+        }
+
+        /* Animated Background */
+        .bg-animation {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: -1;
+            overflow: hidden;
+        }
+
+        .bg-animation::before {
+            content: '';
+            position: absolute;
+            width: 300px;
+            height: 300px;
+            background: rgba(138, 43, 226, 0.2);
+            border-radius: 50%;
+            top: -100px;
+            left: -100px;
+            animation: float 20s infinite ease-in-out;
+        }
+
+        .bg-animation::after {
+            content: '';
+            position: absolute;
+            width: 400px;
+            height: 400px;
+            background: rgba(30, 144, 255, 0.2);
+            border-radius: 50%;
+            bottom: -150px;
+            right: -150px;
+            animation: float 25s infinite ease-in-out reverse;
+        }
+
+        @keyframes float {
+            0%, 100% { transform: translate(0, 0) scale(1); }
+            50% { transform: translate(50px, 50px) scale(1.1); }
+        }
+
+        /* Header */
+        .header {
+            background: rgba(255, 255, 255, 0.05);
+            backdrop-filter: blur(10px);
+            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+            padding: 2rem 0;
+            position: sticky;
+            top: 0;
+            z-index: 100;
+            animation: slideDown 0.8s ease-out;
+        }
+
+        @keyframes slideDown {
+            from { transform: translateY(-100px); opacity: 0; }
+            to { transform: translateY(0); opacity: 1; }
+        }
+
+        .header h1 {
+            background: linear-gradient(45deg, #ff6ec4, #7873f5, #4facfe);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            font-weight: 700;
+            font-size: 3rem;
+            text-align: center;
+            margin: 0;
+            animation: glow 3s ease-in-out infinite;
+        }
+
+        @keyframes glow {
+            0%, 100% { filter: brightness(1); }
+            50% { filter: brightness(1.3); }
+        }
+
+        .subtitle {
+            text-align: center;
+            color: rgba(255, 255, 255, 0.7);
+            margin-top: 0.5rem;
+            font-size: 1.1rem;
+            animation: fadeIn 1s ease-out 0.5s backwards;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; }
+            to { opacity: 1; }
+        }
+
+        /* Gallery Container */
+        .gallery-container {
+            padding: 3rem 0;
+            position: relative;
+        }
+
+        .gallery {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+            gap: 1.5rem;
+            padding: 2rem;
+        }
+
+        .gallery-item {
+            position: relative;
+            overflow: hidden;
+            border-radius: 15px;
+            cursor: pointer;
+            transition: all 0.5s cubic-bezier(0.4, 0, 0.2, 1);
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
+            animation: scaleIn 0.6s ease-out backwards;
+        }
+
+        @keyframes scaleIn {
+            from { transform: scale(0.8); opacity: 0; }
+            to { transform: scale(1); opacity: 1; }
+        }
+
+        .gallery-item:hover {
+            transform: translateY(-10px) scale(1.05);
+            box-shadow: 0 20px 40px rgba(138, 43, 226, 0.4);
+            z-index: 10;
+        }
+
+        .gallery-item img {
+            width: 100%;
+            height: 300px;
+            object-fit: cover;
+            display: block;
+            transition: transform 0.5s ease;
+        }
+
+        .gallery-item:hover img {
+            transform: scale(1.1);
+        }
+
+        .gallery-item::before {
+            content: '';
+            position: absolute;
+            inset: 0;
+            background: linear-gradient(to top, rgba(0,0,0,0.7), transparent);
+            opacity: 0;
+            transition: opacity 0.3s ease;
+            z-index: 1;
+        }
+
+        .gallery-item:hover::before {
+            opacity: 1;
+        }
+
+        .gallery-item::after {
+            content: '\f065';
+            font-family: 'Font Awesome 6 Free';
+            font-weight: 900;
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%) scale(0);
+            color: white;
+            font-size: 3rem;
+            z-index: 2;
+            transition: transform 0.3s ease;
+            text-shadow: 0 0 20px rgba(255, 255, 255, 0.8);
+        }
+
+        .gallery-item:hover::after {
+            transform: translate(-50%, -50%) scale(1);
+        }
+
+        /* Lightbox Modal */
+        .lightbox {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.95);
+            z-index: 9999;
+            animation: fadeIn 0.3s ease-out;
+        }
+
+        .lightbox.active {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .lightbox-content {
+            position: relative;
+            max-width: 90%;
+            max-height: 90%;
+            animation: zoomIn 0.5s cubic-bezier(0.34, 1.56, 0.64, 1);
+        }
+
+        @keyframes zoomIn {
+            from { transform: scale(0.5); opacity: 0; }
+            to { transform: scale(1); opacity: 1; }
+        }
+
+        .lightbox-content img {
+            max-width: 100%;
+            max-height: 90vh;
+            object-fit: contain;
+            border-radius: 10px;
+            box-shadow: 0 0 60px rgba(138, 43, 226, 0.5);
+            animation: slideImage 0.5s ease-out;
+        }
+
+        @keyframes slideImage {
+            from { transform: translateX(100px); opacity: 0; }
+            to { transform: translateX(0); opacity: 1; }
+        }
+
+        /* Controls */
+        .lightbox-controls {
+            position: absolute;
+            top: 2rem;
+            right: 2rem;
+            display: flex;
+            gap: 1rem;
+            z-index: 10000;
+        }
+
+        .control-btn {
+            background: rgba(255, 255, 255, 0.1);
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            color: white;
+            width: 50px;
+            height: 50px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            font-size: 1.2rem;
+        }
+
+        .control-btn:hover {
+            background: rgba(255, 255, 255, 0.2);
+            transform: scale(1.1) rotate(10deg);
+            box-shadow: 0 0 20px rgba(138, 43, 226, 0.6);
+        }
+
+        .control-btn:active {
+            transform: scale(0.95);
+        }
+
+        .control-btn.close-btn:hover {
+            transform: scale(1.1) rotate(90deg);
+        }
+
+        /* Image Counter */
+        .image-counter {
+            position: absolute;
+            top: 2rem;
+            left: 50%;
+            transform: translateX(-50%);
+            background: rgba(255, 255, 255, 0.1);
+            backdrop-filter: blur(10px);
+            padding: 0.5rem 1.5rem;
+            border-radius: 25px;
+            color: white;
+            font-weight: 600;
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            z-index: 10000;
+        }
+
+        /* Progress Bar */
+        .progress-bar-container {
+            position: absolute;
+            bottom: 2rem;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 300px;
+            height: 4px;
+            background: rgba(255, 255, 255, 0.2);
+            border-radius: 10px;
+            overflow: hidden;
+            z-index: 10000;
+        }
+
+        .progress-bar {
+            height: 100%;
+            background: linear-gradient(90deg, #ff6ec4, #7873f5, #4facfe);
+            width: 0%;
+            transition: width 0.1s linear;
+            box-shadow: 0 0 10px rgba(138, 43, 226, 0.8);
+        }
+
+        /* Back Button */
+        .back-button {
+            position: fixed;
+            bottom: 2rem;
+            left: 2rem;
+            z-index: 99;
+            animation: slideInLeft 0.8s ease-out;
+        }
+
+        @keyframes slideInLeft {
+            from { transform: translateX(-100px); opacity: 0; }
+            to { transform: translateX(0); opacity: 1; }
+        }
+
+        .btn-custom {
+            background: rgba(255, 255, 255, 0.1);
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            color: white;
+            padding: 0.75rem 1.5rem;
+            border-radius: 25px;
+            transition: all 0.3s ease;
+            font-weight: 600;
+        }
+
+        .btn-custom:hover {
+            background: rgba(255, 255, 255, 0.2);
+            transform: translateX(-5px);
+            box-shadow: 0 5px 20px rgba(138, 43, 226, 0.4);
+            color: white;
+        }
+
+        /* Responsive */
+        @media (max-width: 768px) {
+            .header h1 {
+                font-size: 2rem;
+            }
+
+            .gallery {
+                grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
+                gap: 1rem;
+                padding: 1rem;
+            }
+
+            .gallery-item img {
+                height: 200px;
+            }
+
+            .lightbox-controls {
+                top: 1rem;
+                right: 1rem;
+            }
+
+            .control-btn {
+                width: 40px;
+                height: 40px;
+                font-size: 1rem;
+            }
+
+            .image-counter {
+                top: 1rem;
+                font-size: 0.9rem;
+                padding: 0.4rem 1rem;
+            }
+
+            .progress-bar-container {
+                width: 200px;
+                bottom: 1rem;
+            }
+        }
+
+        /* Loading Animation */
+        .loading {
+            display: inline-block;
+            width: 20px;
+            height: 20px;
+            border: 3px solid rgba(255,255,255,.3);
+            border-radius: 50%;
+            border-top-color: #fff;
+            animation: spin 1s ease-in-out infinite;
+        }
+
+        @keyframes spin {
+            to { transform: rotate(360deg); }
+        }
+    </style>
+</head>
+<body>
+    <!-- Animated Background -->
+    <div class="bg-animation"></div>
+
+    <!-- Header -->
+    <div class="header">
+        <div class="container">
+            <h1>Automatic Image Slider</h1>
+            <p class="subtitle">Click any image to start the slideshow experience</p>
+        </div>
+    </div>
+
+    <!-- Main Gallery -->
+    <div class="gallery-container">
+        <div class="container">
+            <div class="gallery" id="gallery">
+                <!-- Images will be dynamically loaded here -->
+            </div>
+        </div>
+    </div>
+
+    <!-- Back Button -->
+    <a href="../../index.html" class="back-button btn btn-custom">
+        <i class="fa-solid fa-arrow-left me-2"></i>
+        Back
+    </a>
+
+    <!-- Lightbox Modal -->
+    <div class="lightbox" id="lightbox">
+        <div class="image-counter" id="imageCounter">1 / 80</div>
+        
+        <div class="lightbox-controls">
+            <button class="control-btn" id="playPauseBtn" title="Pause">
+                <i class="fas fa-pause"></i>
+            </button>
+            <button class="control-btn close-btn" id="closeBtn" title="Close">
+                <i class="fas fa-times"></i>
+            </button>
+        </div>
+
+        <div class="lightbox-content" id="lightboxContent">
+            <img src="" alt="Slideshow Image" id="lightboxImage">
+        </div>
+
+        <div class="progress-bar-container">
+            <div class="progress-bar" id="progressBar"></div>
+        </div>
+    </div>
+
+    <!-- Bootstrap 5 JS -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+
+    <script>
+        // Image URLs - You can replace these with your own images
+        const imageUrls = [
+            "pins/pin1.jpg",
+            "pins/pin2.jpg",
+            "pins/pin3.jpg",
+            "pins/pin4.jpg",    
+            "https://images.unsplash.com/photo-1519414442781-fbd745c5b497?w=800",
+            "https://images.unsplash.com/photo-1514747975201-4715db583da9?w=800",
+            "https://images.unsplash.com/photo-1441974231531-c6227db76b6e?w=800",
+            "https://images.unsplash.com/photo-1542401886-65d6c61db217?w=800",
+            
+            "pins/pin5.jpg",
+            
+            "pins/pin6.jpg",
+"pins/pin7.jpg",
+"pins/pin8.jpg",
+
+            "https://images.unsplash.com/photo-1493134799591-2c9eed26201a?w=800",
+            "https://images.unsplash.com/photo-1676001159789-f89ebb0d84ac?w=800",
+            "https://images.unsplash.com/photo-1531366936337-7c912a4589a7?w=800",
+            "https://images.unsplash.com/photo-1603477849227-705c424d1d80?w=800",
+            "pins/pin9.jpg",
+            "pins/pin10.jpg",
+            "pins/pin11.jpg",
+            "pins/pin12.jpg",
+            "pins/pin13.jpg",
+            "pins/pin14.jpg",
+            "https://images.unsplash.com/photo-1663940019982-c14294717dbd?w=800",
+            "https://images.unsplash.com/photo-1605895370326-e96b9d52e3f5?w=800",
+            "https://images.unsplash.com/photo-1542609715982-16f4e1e2cfc0?w=800",
+"pins/pin31.jpg",
+"pins/pin32.jpg",
+"pins/pin33.jpg",
+"pins/pin34.jpg",
+"pins/pin35.jpg",
+"pins/pin36.jpg",
+"pins/pin37.jpg",
+"pins/pin38.jpg",
+"pins/pin39.jpg",
+"pins/pin40.jpg",
+            "https://images.unsplash.com/photo-1615184697985-c9bde1b07da7?w=800",
+            "https://images.unsplash.com/photo-1618565917118-723caea78e02?w=800",
+            "https://images.unsplash.com/photo-1598674093760-4e89d6e4febc?w=800",
+            "https://images.unsplash.com/photo-1506744038136-46273834b3fb?w=800",
+            "pins/pin15.jpg",
+            "pins/pin16.jpg",
+            "pins/pin17.jpg",
+            "pins/pin18.jpg",
+            "pins/pin19.jpg",
+            "pins/pin20.jpg",
+            "pins/pin21.jpg",
+            "pins/pin22.jpg",
+            "pins/pin23.jpg",
+            "pins/pin24.jpg",
+            "pins/pin25.jpg",
+            "pins/pin26.jpg",
+            "pins/pin27.jpg",
+            "pins/pin28.jpg",
+            "pins/pin29.jpg",
+            "pins/pin30.jpg",
+            "https://images.unsplash.com/photo-1501363282200-f83dce300c98?w=800",
+            "https://images.unsplash.com/photo-1597097458412-7dbb35fa1fcf?w=800",
+"pins/pin41.jpg",
+"pins/pin42.jpg",
+"pins/pin43.jpg",
+"pins/pin44.jpg",
+"pins/pin45.jpg",
+"pins/pin46.jpg",
+"pins/pin47.jpg",
+"pins/pin48.jpg",
+"pins/pin49.jpg",
+"pins/pin50.jpg",
+"pins/pin51.jpg",
+"pins/pin52.jpg",
+"pins/pin53.jpg",
+"pins/pin54.jpg",
+"pins/pin55.jpg",
+"pins/pin56.jpg",
+"pins/pin57.jpg",
+"pins/pin58.jpg",
+"pins/pin59.jpg",
+"pins/pin60.jpg",
+"pins/pin61.jpg",
+"pins/pin62.jpg",
+"pins/pin63.jpg",
+"pins/pin64.jpg",
+"pins/pin65.jpg",
+"pins/pin66.jpg",
+"pins/pin67.jpg",
+"pins/pin68.jpg",
+"pins/pin69.jpg",
+"pins/pin70.jpg",
+"pins/pin71.jpg",
+"pins/pin72.jpg",
+            "https://images.unsplash.com/photo-1628928270737-37b9f05f9827?w=800",
+            "https://images.unsplash.com/photo-1614754844959-5e29c8ac2b26?w=800",
+            "pins/pin73.jpg",
+"pins/pin74.jpg",
+"pins/pin75.jpg",
+"pins/pin76.jpg",
+"pins/pin77.jpg",
+"pins/pin78.jpg",
+"pins/pin79.jpg",
+"pins/pin80.jpg"
+        ];
+
+        // Create 80 images by repeating the array
+        const allImages = [];
+        while (allImages.length < 100) {
+            allImages.push(...imageUrls);
+        }
+        const finalImages = allImages.slice(0, 100);
+
+        // DOM Elements
+        const gallery = document.getElementById('gallery');
+        const lightbox = document.getElementById('lightbox');
+        const lightboxImage = document.getElementById('lightboxImage');
+        const closeBtn = document.getElementById('closeBtn');
+        const playPauseBtn = document.getElementById('playPauseBtn');
+        const imageCounter = document.getElementById('imageCounter');
+        const progressBar = document.getElementById('progressBar');
+
+        // State
+        let currentIndex = 0;
+        let isPlaying = true;
+        let slideshowInterval = null;
+        let progressInterval = null;
+        let progress = 0;
+        const slideDuration = 3000; // 3 seconds per slide
+
+        // Populate Gallery
+        finalImages.forEach((imageUrl, index) => {
+            const galleryItem = document.createElement('div');
+            galleryItem.className = 'gallery-item';
+            galleryItem.style.animationDelay = `${index * 0.05}s`;
+            
+            const img = document.createElement('img');
+            img.src = imageUrl;
+            img.alt = `Image ${index + 1}`;
+            img.loading = 'lazy';
+            
+            galleryItem.appendChild(img);
+            galleryItem.addEventListener('click', () => openLightbox(index));
+            gallery.appendChild(galleryItem);
+        });
+
+        // Open Lightbox
+        function openLightbox(index) {
+            currentIndex = index;
+            isPlaying = true;
+            updateLightbox();
+            lightbox.classList.add('active');
+            document.body.style.overflow = 'hidden';
+            startSlideshow();
+        }
+
+        // Close Lightbox
+        function closeLightbox() {
+            lightbox.classList.remove('active');
+            document.body.style.overflow = 'auto';
+            stopSlideshow();
+            progress = 0;
+            progressBar.style.width = '0%';
+        }
+
+        // Update Lightbox Content
+        function updateLightbox() {
+            lightboxImage.src = finalImages[currentIndex];
+            imageCounter.textContent = `${currentIndex + 1} / ${finalImages.length}`;
+            
+            // Reset progress
+            progress = 0;
+            progressBar.style.width = '0%';
+        }
+
+        // Start Slideshow
+        function startSlideshow() {
+            stopSlideshow(); // Clear any existing intervals
+            
+            if (!isPlaying) return;
+
+            // Update progress bar
+            progressInterval = setInterval(() => {
+                progress += (100 / (slideDuration / 100));
+                progressBar.style.width = `${progress}%`;
+            }, 100);
+
+            // Change slide
+            slideshowInterval = setInterval(() => {
+                currentIndex = (currentIndex + 1) % finalImages.length;
+                updateLightbox();
+            }, slideDuration);
+        }
+
+        // Stop Slideshow
+        function stopSlideshow() {
+            if (slideshowInterval) {
+                clearInterval(slideshowInterval);
+                slideshowInterval = null;
+            }
+            if (progressInterval) {
+                clearInterval(progressInterval);
+                progressInterval = null;
+            }
+        }
+
+        // Toggle Play/Pause
+        function togglePlayPause() {
+            isPlaying = !isPlaying;
+            
+            const icon = playPauseBtn.querySelector('i');
+            if (isPlaying) {
+                icon.className = 'fas fa-pause';
+                playPauseBtn.title = 'Pause';
+                startSlideshow();
+            } else {
+                icon.className = 'fas fa-play';
+                playPauseBtn.title = 'Play';
+                stopSlideshow();
+            }
+        }
+
+        // Event Listeners
+        closeBtn.addEventListener('click', closeLightbox);
+        playPauseBtn.addEventListener('click', togglePlayPause);
+
+        // Close lightbox on background click
+        lightbox.addEventListener('click', (e) => {
+            if (e.target === lightbox) {
+                closeLightbox();
+            }
+        });
+
+        // Keyboard controls
+        document.addEventListener('keydown', (e) => {
+            if (lightbox.classList.contains('active')) {
+                if (e.key === 'Escape') {
+                    closeLightbox();
+                } else if (e.key === ' ') {
+                    e.preventDefault();
+                    togglePlayPause();
+                }
+            }
+        });
+
+        // Prevent context menu on images
+        document.addEventListener('contextmenu', (e) => {
+            if (e.target.tagName === 'IMG') {
+                e.preventDefault();
+            }
+        });
+    </script>
+</body>
+</html>
